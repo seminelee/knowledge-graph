@@ -53,6 +53,8 @@ Fiber解决这个问题的思路是增量更新。
 
 https://seminelee.github.io/2018/07/21/vue-3/
 
+观察者模式
+
 ![ååç»å®](https://seminelee.github.io/static/2018/07/mvvm-1.png)
 
 - Observer 监听者
@@ -66,6 +68,8 @@ https://seminelee.github.io/2018/07/21/vue-3/
 - Watcher 订阅者
 
   订阅者数组。Compile初始化视图后数据更新时，Observer通知变化，最后更新视图。
+  
+  *vue的更新dom的diff算法位置在订阅者更新自己的方法里面*
 
 
 
@@ -128,6 +132,14 @@ class NameForm extends React.Component {
   }
 }
 ```
+
+
+
+### 6.3.3 错误边界
+
+如果一个 class 组件中定义了 [`static getDerivedStateFromError()`](https://zh-hans.reactjs.org/docs/react-component.html#static-getderivedstatefromerror) 或 [`componentDidCatch()`](https://zh-hans.reactjs.org/docs/react-component.html#componentdidcatch) 这两个生命周期方法中的任意一个（或两个）时，那么它就变成一个错误边界。当抛出错误后，请使用 `static getDerivedStateFromError()` 渲染备用 UI ，使用 `componentDidCatch()` 打印错误信息。
+
+可以开发一个这样的高阶组件，它会捕获它的子组件的错误。
 
 ##6.4 react-router与vue-router
 

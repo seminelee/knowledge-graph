@@ -246,42 +246,13 @@ https://seminelee.github.io/2019/05/08/rn-miniprogram/
 
 - 不能使用 less、scss 等预编译器
 
-### 3.1 wepy
-
-wepy：vue+webpack
-
-功能：脚手架、编译打包、核心库
-
-编译原理：
-
-1. index.wpy拆解成style、template、script，script中拆解出json文件
-2. 编译前梳理组件引用关系与npm引用关系
-3. 使用各种loader编译成wxss、wxml、js文件
-4. 各种插件处理，代码混淆插件、wxml/图片压缩插件
-5. 最终生成wxss、wxml、js、json
-
-缺点：
-
-1. 语法解析：编译`template`用的是xmldom，这个库已经没有人维护了等等，报错时无法很快定位是哪个地方报错了。
-2. 类Vue语法，某些Vue的API不支持
-3. 错误处理机制：报错没有详细的信息（位置等），比较难快速定位问题
-4. 数据绑定性能优化：解决频繁`setData`的问题。diff方法的优化。
-
-v2.0数据绑定优化： 
-
-- v1.0
-  初始化时对树进行深拷贝->当有修改时与拷贝的树相比较->得出脏数据->`setData`
-- v2.0
-  参考Vue并做了优化
-  初始化时创建watcher->当有修改时watcher会记录修改（key-path-value），并将脏数据放到队列里->`setData` （不会做深比较了）
-
-### 3.2 wepy和mpvue
+### 3.1 wepy和mpvue
 
 语法规范不同：wepy使用类vue语法规范；mpvue使用vue语法规范
 
 生命周期不同：wepy 生命周期基本与原生小程序相同；mpvue使用vue的生命周期
 
-### 3.3 taro
+### 3.2 taro
 
 使用 React.js 开发微信小程序的前端框架。同时因为使用了react的原因所以除了能编译h5, 小程序外还可以编译为ReactNative;
 
