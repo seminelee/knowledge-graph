@@ -69,12 +69,8 @@ checkscope();
 
 
 __`this`__
-
-<<<<<<< HEAD
  `this`就是上下文对象，即被调用函数所处的环境，也就是说，`this` 在函数内部指向了调用函数的对象。 
 
-=======
->>>>>>> 87721a7b8398ed00c0d10a63c916aa9943bb4dd8
 - 在全局环境下，this 始终指向全局对象（window）
 - 普通函数内部的this：非严格模式下，this 默认指向全局对象window；而严格模式下， this为undefined
 - 对象内部方法的this指向调用这些方法的对象
@@ -285,11 +281,7 @@ apply
 Function.prototype.myApply = function(thisArg, argArray) {
   if (thisArg) {
     thisArg.fn = this // 把要调用的函数挂载在thisArg对象上
-<<<<<<< HEAD
-    const result = thisArg.fn(argArray)
-=======
     const result = thisArg.fn(...argArray)
->>>>>>> 87721a7b8398ed00c0d10a63c916aa9943bb4dd8
     delete thisArg.fn
     return result
   } else {
@@ -305,12 +297,9 @@ Function.prototype.myCall = function(thisArg, ...argArray) {
   if (thisArg) {
     thisArg.fn = this // 把要调用的函数挂载在thisArg对象上
     const result = thisArg.fn(...argArray)
-<<<<<<< HEAD
-=======
     // 不用es6的写法可以这样写
     // arguments.shift()
     // eval('context.fn(' + arguments +')')
->>>>>>> 87721a7b8398ed00c0d10a63c916aa9943bb4dd8
     delete thisArg.fn
     return result
   } else {
@@ -341,7 +330,7 @@ Function.prototype.myCall = function(thisArg, ...argArray) {
 
 JS主要靠原型链来实现继承
 
-构造函数、原型和实例的关系：每个构造函数都有一个原型对象，原型对象都包含一个指向构造函数的指针，而实例都包含一个指向原型对象的内部指针。
+每个实例对象（ object ）都有一个私有属性（称之为 __proto__ ）指向它的构造函数的原型对象（**prototype** ）。该原型对象也有一个自己的原型对象( __proto__ ) ，层层向上直到一个对象的原型对象为 `null`。根据定义，`null` 没有原型，并作为这个**原型链**中的最后一个环节。
 
 ```js
 function SuperType(){
