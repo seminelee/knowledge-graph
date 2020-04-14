@@ -2,7 +2,7 @@
 
 # 移动开发技术简介
 
-##1 原生开发
+## 1 原生开发
 
 原生应用程序是指某一个移动平台（比如iOS或安卓）所特有的应用，使用相应平台支持的开发工具和语言，并直接调用系统提供的SDK API。
 
@@ -26,7 +26,7 @@
 
 
 
-##2 H5+原生混合开发（Hybrid技术）
+## 2 H5+原生混合开发（Hybrid技术）
 
 即H5+原生混合开发，这类框架主要原理就是将APP的一部分需要动态变动的内容通过H5来实现，通过原生的网页加载控件WebView (Android)或WKWebView（iOS）来加载（以后若无特殊说明，我们用WebView来统一指代android和iOS中的网页加载控件）。
 
@@ -52,7 +52,7 @@
 
 
 
-##3 JavaScript开发+原生渲染
+## 3 JavaScript开发+原生渲染
 
 React Native、Weex等
 
@@ -103,11 +103,11 @@ __JavaScriptCore__是一个JavaScript解释器，它在React Native中主要有�
   
   - 由于渲染依赖原生控件，不同平台的控件需要单独维护，并且当系统更新时，社区控件可能会滞后；除此之外，其控件系统也会受到原生UI系统限制，例如，在Android中，手势冲突消歧规则是固定的，这在使用不同人写的控件嵌套时，手势冲突问题将会变得非常棘手。
 
-> Weex
+> __Weex__
 >
 > 思想与原理与RN类似，最大的不同是语法层面。Weex支持Vue语法和Rax语法（基于React JSX语法）。而RN只支持JSX语法。
 >
-> 快应用
+> __快应用__
 >
 > 快应用是华为、小米、OPPO、魅族等国内9大主流手机厂商共同制定的轻量级应用标准，目标直指微信小程序。它也是采用JavaScript语言开发，原生控件渲染，与React Native和Weex相比主要有两点不同：
 >
@@ -187,10 +187,11 @@ https://seminelee.github.io/2019/05/08/rn-miniprogram/
 
 ![å°ç¨åºé¡µé¢æ¸²æ](https://seminelee.github.io/static/2019/07/miniprogram-dom.png)
 
-![å°ç¨åºåçº¿ç¨æ¨¡å](https://seminelee.github.io/static/2019/07/miniprogram.png)
+ ![img](https://user-gold-cdn.xitu.io/2018/5/17/1636cb90ba54f91e?imageView2/0/w/1280/h/960/format/webp/ignore-error/1) 
 
-小程序的运行环境分成渲染层和逻辑层，WXML 模板和 WXSS 样式工作在渲染层，JS 脚本工作在逻辑层。小程序的渲染层和逻辑层分别由2个线程管理：渲染层的界面使用了WebView 进行渲染；逻辑层采用JsCore线程运行JS脚本。
-一个小程序存在多个界面，所以渲染层存在多个WebView线程。这使得小程序更贴近原生体验，也避免了单个WebView的任务过于繁重。
+- **逻辑层：创建一个单独的线程去执行 JavaScript，在这里执行的都是有关小程序业务逻辑的代码，负责逻辑处理、数据请求、接口调用等**
+- **视图层：界面渲染相关的任务全都在 WebView 线程里执行，通过逻辑层代码去控制渲染哪些界面。一个小程序存在多个界面，所以视图层存在多个 WebView 线程**
+- **JSBridge 起到架起上层开发与Native（系统层）的桥梁，使得小程序可通过API使用原生的功能，且部分组件为原生组件实现，从而有良好体验**
 
 小程序的渲染层和逻辑层分离主要有两个原因：
 
@@ -246,35 +247,6 @@ https://seminelee.github.io/2019/05/08/rn-miniprogram/
 
 - 不能使用 less、scss 等预编译器
 
-### 3.1 wepy
-
-wepy：vue+webpack
-
-功能：脚手架、编译打包、核心库
-
-编译原理：
-
-1. index.wpy拆解成style、template、script，script中拆解出json文件
-2. 编译前梳理组件引用关系与npm引用关系
-3. 使用各种loader编译成wxss、wxml、js文件
-4. 各种插件处理，代码混淆插件、wxml/图片压缩插件
-5. 最终生成wxss、wxml、js、json
-
-缺点：
-
-1. 语法解析：编译`template`用的是xmldom，这个库已经没有人维护了等等，报错时无法很快定位是哪个地方报错了。
-2. 类Vue语法，某些Vue的API不支持
-3. 错误处理机制：报错没有详细的信息（位置等），比较难快速定位问题
-4. 数据绑定性能优化：解决频繁`setData`的问题。diff方法的优化。
-
-v2.0数据绑定优化： 
-
-- v1.0
-  初始化时对树进行深拷贝->当有修改时与拷贝的树相比较->得出脏数据->`setData`
-- v2.0
-  参考Vue并做了优化
-  初始化时创建watcher->当有修改时watcher会记录修改（key-path-value），并将脏数据放到队列里->`setData` （不会做深比较了）
-
 ### 3.2 wepy和mpvue
 
 语法规范不同：wepy使用类vue语法规范；mpvue使用vue语法规范
@@ -285,3 +257,20 @@ v2.0数据绑定优化：
 
 使用 React.js 开发微信小程序的前端框架。同时因为使用了react的原因所以除了能编译h5, 小程序外还可以编译为ReactNative;
 
+小程序插件开发有bug
+
+
+
+## 4 优化措施
+
+- 避免频繁的setData、避免每次setData传递大量的新数据。
+
+   由`setData`的底层实现可知，我们的数据传输实际是一次 `evaluateJavascript` 脚本过程，当数据量过大时会增加脚本的编译执行时间，占用 WebView JS 线程， 
+
+-  注意大图片和长列表图片的使用。
+
+  在 iOS 上，小程序的页面是由多个 WKWebView 组成的，在系统内存紧张时，会回收掉一部分 WKWebView。从过去我们分析的案例来看，大图片和长列表图片的使用会引起 WKWebView 的回收。 
+
+- 分包加载， 优化小程序首次启动的下载时间 ； **清理没有使用到的代码和资源** ，减少代码包大小
+
+- 部分页面可以预先加载数据

@@ -1,3 +1,5 @@
+
+
 # 6. React/Vue
 
 ## 6.1 虚拟dom
@@ -10,44 +12,16 @@ https://seminelee.github.io/2019/09/09/virtual-dom/
 
 1. 用JS对象模拟DOM（虚拟DOM）
 2. 把此虚拟DOM转成真实DOM并插入页面中（render）
-3. 如果有事件发生修改了虚拟DOM，比较两棵虚拟DOM树的差异，得到差异对象（补丁数组）（diff）
-4. 把差异对象（补丁数组）应用到真正的DOM树上（patch）
+3. 如果有事件发生修改了虚拟DOM，重新构建 虚拟DOM节点树。
+4. 比较两棵虚拟DOM树的差异，得到差异对象（补丁数组）（diff）
+5. 把差异对象（补丁数组）应用到真正的DOM树上（patch）
 
-Vue在更新数据这一步骤实现的方式不相同，vue监听每个数据，更新数据时直接通知对应的订阅者，然后更新视图。这也使得Vue比起react可以更快地计算出Virtual DOM的差异，不需要重新渲染整个组件树。
+好处：
 
-### 6.1.1 diff算法
+1. 对于真实DOM， 每次DOM改变的时候，都需要在浏览器中进行渲染。每一次DOM改变的时候，浏览器都需要重新计算CSS，进行布局处理，然后重新渲染页面。这都需要时间。 
+2. 而虚拟DOM， 能最小化DOM改变，然后批处理DOM变化，在必要的时候才重新渲染页面。 
 
-[浅析React Diff 与Fiber - 知乎](https://zhuanlan.zhihu.com/p/58863799)
 
-传统 diff 算法 通过循环递归对节点进行依次对比。那React要怎么优化diff的过程呢
-
-![img](https://pic1.zhimg.com/80/v2-0454c358dc97314557f3af224d110bf4_1440w.jpg)
-
-1. Web UI 中 DOM 节点跨层级的移动操作特别少，可以忽略不计。
-
-   ![img](https://pic2.zhimg.com/80/v2-91dc04a538ffb258e380328351153429_1440w.jpg)
-
-2. 拥有相同类的两个组件将会生成相似的树形结构，拥有不同类的两个组件将会生成不同的树形结构。
-
-   ![img](https://pic2.zhimg.com/80/v2-84a9a55b3f146c25cec76ddf82613a4d_1440w.jpg)
-
-3. 对于同一层级的一组子节点，它们可以通过唯一 id 进行区分。
-
-   ![img](https://pic1.zhimg.com/80/v2-ac6e272b0923f8fc9576aabe2c6f25c4_1440w.jpg)
-
-基于以上三个前提策略，React 分别对 **tree diff**、**component diff** 以及 **element diff** 进行算法优化。
-
-### 6.1.2 Fiber算法
-
-众所周知，JavaScript在浏览器的主线程上运行，通常样式计算、布局以及页面绘制会一起运行。如果JavaScript运行时间过长，就会阻塞这些其他工作，可能导致掉帧。
-
-而React在首次渲染过程中构建出Virtual DOM Tree，后续需要更新时（setState()），diff Virtual DOM Tree得到DOM change，并把DOM change应用（patch）到DOM树。
-
-自顶向下的递归mount/update，无法中断（持续占用主线程），这样主线程上的布局、动画等周期性任务以及交互响应就无法立即得到处理，影响体验。同时也造成了React在一些响应体验要求较高的场景不适用，比如动画，布局和手势等。
-
-Fiber解决这个问题的思路是增量更新。
-
-> 把渲染/更新过程（递归diff）拆分成一系列小任务，每次检查树上的一小部分，做完看是否还有时间继续下一个任务，有的话继续，没有的话把自己挂起，主线程不忙的时候再继续。
 
 ## 6.2 Vue 双向绑定
 
@@ -67,7 +41,17 @@ https://seminelee.github.io/2018/07/21/vue-3/
 
   订阅者数组。Compile初始化视图后数据更新时，Observer通知变化，最后更新视图。
 
+### 6.2.1 重渲染
 
+[Vue和React的视图更新机制对比](https://juejin.im/post/5c17568a6fb9a04a006eeb92)
+
+Vue的订阅式机制决定了它不仅知道哪些数据发生了更新，也知道这个数据更新了之后当前组件以及子组件的视图需不需要重新渲染。这是通过__依赖收集__实现的，Vue的视图template会编译成render函数，在数据（data/props/computed）中定义了getter，每次调用各个组件的render函数时，通过getter，就能知道哪些数据被哪些组件的视图所依赖，下一次对这些数据赋值时，也就是调用setter，相应的视图就能触发重渲染，而无关的组件则不需要再次调用render函数，节省了开销。借用Vue作者做的图：（他称之为push式更新）
+
+![vue-push-rendering](https://user-gold-cdn.xitu.io/2018/12/17/167bb2a08ade78be?imageView2/0/w/1280/h/960/format/webp/ignore-error/1) 
+
+而在React中，当调用了`setState`，React并不在乎有什么数据发生了改变，接着触发组件的`shouldComponentUpdate`，如果返回true则调用`render`，然后以同样的办法依次更新所有子组件，如果返回`false`则阻止`render`方法调用及子组件更新。换句话说，更新视图的控制权由`shouldComponentUpdate`掌握，而默认情况下该方法返回`true`。（Vue作者称为pull式更新）
+
+![react-pull-rendering](https://user-gold-cdn.xitu.io/2018/12/17/167bb2a08ad17371?imageView2/0/w/1280/h/960/format/webp/ignore-error/1) 
 
 ## 6.3 react单向数据流
 
@@ -129,7 +113,52 @@ class NameForm extends React.Component {
 }
 ```
 
-##6.4 react-router与vue-router
+### 6.3.2 diff算法的优化
+
+[浅析React Diff 与Fiber - 知乎](https://zhuanlan.zhihu.com/p/58863799)
+
+传统 diff 算法 通过循环递归对节点进行依次对比。那要怎么优化diff的过程呢
+
+![img](https://pic1.zhimg.com/80/v2-0454c358dc97314557f3af224d110bf4_1440w.jpg)
+
+1. Web UI 中 DOM 节点跨层级的移动操作特别少，可以忽略不计。
+
+    如果父节点不同，放弃对子节点的比较，直接删除旧节点然后添加新的节点重新渲染 
+
+   ![img](https://pic2.zhimg.com/80/v2-91dc04a538ffb258e380328351153429_1440w.jpg)
+
+2. 拥有相同类的两个组件将会生成相似的树形结构，拥有不同类的两个组件将会生成不同的树形结构。
+
+   如果类不一样，Virtual DOM不会再计算变化的是什么，而是重新渲染 
+
+   ![img](https://pic2.zhimg.com/80/v2-84a9a55b3f146c25cec76ddf82613a4d_1440w.jpg)
+
+3. 对于同一层级的一组子节点，它们可以通过唯一 id 进行区分。
+
+   在只是顺序不一样了的场景，就避免了删除再建节点，而是仅仅调换顺序。
+
+   ![img](https://pic1.zhimg.com/80/v2-ac6e272b0923f8fc9576aabe2c6f25c4_1440w.jpg)
+
+基于以上三个前提策略，React 分别对 **tree diff**、**component diff** 以及 **element diff** 进行算法优化。
+
+> diff实现的区别：
+>
+> -  `react` 函数式组件思想 当你 `setstate` 就会遍历 `diff` 当前组件所有的子节点子组件, 这种方式开销是很大的, 所以 `react 16` 采用了 `fiber` **链表**代替之前的树，可以中断的，分片的在浏览器空闲时候执行
+> -   `vue` 组件响应式思想 采用代理监听数据，我在某个组件里修改数据，就会明确知道那个组件产生了变化，只用 `diff` 这个组件就可以了 
+
+### 6.3.3 React Fiber算法
+
+众所周知，JavaScript在浏览器的主线程上运行，通常样式计算、布局以及页面绘制会一起运行。如果JavaScript运行时间过长，就会阻塞这些其他工作，可能导致掉帧。
+
+而React在首次渲染过程中构建出Virtual DOM Tree，后续需要更新时（setState()），diff Virtual DOM Tree得到DOM change，并把DOM change应用（patch）到DOM树。
+
+自顶向下的递归mount/update，无法中断（持续占用主线程），这样主线程上的布局、动画等周期性任务以及交互响应就无法立即得到处理，影响体验。同时也造成了React在一些响应体验要求较高的场景不适用，比如动画，布局和手势等。
+
+Fiber解决这个问题的思路是增量更新。
+
+> 把渲染/更新过程（递归diff）拆分成一系列小任务，每次检查树上的一小部分，做完看是否还有时间继续下一个任务，有的话继续，没有的话把自己挂起，主线程不忙的时候再继续。
+
+## 6.4 react-router与vue-router
 
 以react-router为例，路由的实现主要有3种技术：
 
@@ -156,17 +185,48 @@ class NameForm extends React.Component {
   entries[current] = location // replace
   ```
 
-# 
+### 
+
+## 6.4 readux与vuex
+
+[]( https://juejin.im/post/5d6a6997e51d4561a54b69f6 )
+
+### 6.4.1 核心概念
+
+| Redux 的核心概念                                             | Vuex 的核心概念                                              |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| action （同步action ，或借助 中间件 实现异步操作，action 不会改变 store，只是描述了怎么改变store） | mutation（用于同步操作）、action（可用于异步操作，提交 mutation） |
+| reducer（纯函数，根据 action 和旧的 store 计算出新的 store   | mutation里面直接修改 state                                   |
+| store（单一数据源）                                          | state（单一数据源）                                          |
+
+### 6.4.2 使用原则
+
+Redux 的三大原则：
+
+- 单一数据源（一个Redux应用只有一个store），也是单向的数据流；
+- state只读（唯一改变 state 的方法就是触发 action，action 是一个用于描述已发生事件的普通对象。）；
+- 触发action就会使用对应的纯函数（reducer）来修改state。
+
+Vuex 的三大原则：
+
+- 应用层级的状态应该集中到单个 store 对象中。
+- 提交 mutation 是更改状态的唯一方法，并且这个过程是同步的。
+- 异步逻辑都应该封装到 action 里面。
+
+### 6.4.3 处理异步操作
+
+- Redux 得益于 中间件机制，利用 redux-thunk，可以将异步逻辑放在  action creator 里面，通过 action creator 做一个控制反转， 给 action creator 传入 dispatch 作为参数，于是就可以 dispatch  action
+-  而 Vuex 是用 mutation 来对应 Redux 的 action，另外 Vuex 又创造了一个 action 来提交 mutation 并通过异步提交 mutation 来实现异步操作结果能够到达 state. 
 
 ## 6.5 对比
 
-### 6.4.1 生命周期：
+### 6.5.1 生命周期：
 
 Vue
 
 [https://cn.vuejs.org/v2/guide/instance.html#%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%9B%BE%E7%A4%BA](https://cn.vuejs.org/v2/guide/instance.html)
 
-![image-20190909232615607](/Users/lixiaomei/Library/Application Support/typora-user-images/image-20190909232615607.png)
+ ![Vue 实例生命周期](https://cn.vuejs.org/images/lifecycle.png) 
 
 - beforeCreate-created：Observer监听属性
 - created-beforeMount：compiler解析指令，绑定对应属性订阅者，生成dom tree
@@ -180,26 +240,25 @@ http://projects.wojtekmaj.pl/react-lifecycle-methods-diagram/
 
 ![image-20190909233833419](/Users/lixiaomei/Library/Application Support/typora-user-images/image-20190909233833419.png)
 
+![1586748351508](C:\Users\semineli\AppData\Roaming\Typora\typora-user-images\1586748351508.png)
+
 - componentWillMount-componentDidMount：生成虚拟dom tree，转成真实的dom
 - componentDidMount-componentWillUpdate：diff对比新旧dom tree
 - componentWillUpdate-componentDidUpdate：patch，更新视图
 - componentWillUnmount：卸载
 
-### 6.4.2 相同点
+### 6.5.2 相同点
 
 - 都体现了虚拟dom思想
 - 都鼓励组件化应用
 - 生命周期也相似
 
-### 6.4.3 区别
+### 6.5.3 区别
 
 - Vue双向绑定；React单向数据流，大型应用状态更可控
-
+- diff实现的区别：
+  -  `react` 函数式组件思想 当你 `setstate` 就会遍历 `diff` 当前组件所有的子节点子组件, 这种方式开销是很大的, 所以 `react 16` 采用了 `fiber` **链表**代替之前的树，可以中断的，分片的在浏览器空闲时候执行 
+  -  `vue` 组件响应式思想 采用代理监听数据，我在某个组件里修改数据，就会明确知道那个组件产生了变化，只用 `diff` 这个组件就可以了 
 - Vue模版指令，把html，css，js组合到一起，要记api；React all in js，jsx，api少
-
 - react可以通过高阶组件（Higher Order Components--HOC）来扩展；vue需要通过mixins来扩展
-
-- 对比新旧数据beforeupate的实现：Vue知道是组件数据中的value字段发生更新了， 而React只知道是组件的State发生了变化，并不知道是什么数据发生了变化。
-
-  react对比新旧dom树，生成补丁数组，再更新视图；vue监听每个数据，更新数据时直接通知对应的订阅者，然后更新视图。
 
