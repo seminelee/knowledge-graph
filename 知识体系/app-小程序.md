@@ -264,11 +264,9 @@ https://seminelee.github.io/2019/05/08/rn-miniprogram/
 ## 4 优化措施
 
 - 避免频繁的setData、避免每次setData传递大量的新数据。
-
    由`setData`的底层实现可知，我们的数据传输实际是一次 `evaluateJavascript` 脚本过程，当数据量过大时会增加脚本的编译执行时间，占用 WebView JS 线程， 
 
 -  注意大图片和长列表图片的使用。
-
   在 iOS 上，小程序的页面是由多个 WKWebView 组成的，在系统内存紧张时，会回收掉一部分 WKWebView。从过去我们分析的案例来看，大图片和长列表图片的使用会引起 WKWebView 的回收。 
 
 - 分包加载， 优化小程序首次启动的下载时间 ； **清理没有使用到的代码和资源** ，减少代码包大小

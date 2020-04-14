@@ -27,6 +27,8 @@ https://seminelee.github.io/2019/09/09/virtual-dom/
 
 https://seminelee.github.io/2018/07/21/vue-3/
 
+观察者模式
+
 ![ååç»å®](https://seminelee.github.io/static/2018/07/mvvm-1.png)
 
 - Observer 监听者
@@ -40,6 +42,8 @@ https://seminelee.github.io/2018/07/21/vue-3/
 - Watcher 订阅者
 
   订阅者数组。Compile初始化视图后数据更新时，Observer通知变化，最后更新视图。
+  
+  *vue的更新dom的diff算法位置在订阅者更新自己的方法里面*
 
 ### 6.2.1 重渲染
 
@@ -158,6 +162,12 @@ Fiber解决这个问题的思路是增量更新。
 
 > 把渲染/更新过程（递归diff）拆分成一系列小任务，每次检查树上的一小部分，做完看是否还有时间继续下一个任务，有的话继续，没有的话把自己挂起，主线程不忙的时候再继续。
 
+### 6.3.4 错误边界
+
+如果一个 class 组件中定义了 [`static getDerivedStateFromError()`](https://zh-hans.reactjs.org/docs/react-component.html#static-getderivedstatefromerror) 或 [`componentDidCatch()`](https://zh-hans.reactjs.org/docs/react-component.html#componentdidcatch) 这两个生命周期方法中的任意一个（或两个）时，那么它就变成一个错误边界。当抛出错误后，请使用 `static getDerivedStateFromError()` 渲染备用 UI ，使用 `componentDidCatch()` 打印错误信息。
+
+可以开发一个这样的高阶组件，它会捕获它的子组件的错误。
+
 ## 6.4 react-router与vue-router
 
 以react-router为例，路由的实现主要有3种技术：
@@ -185,13 +195,11 @@ Fiber解决这个问题的思路是增量更新。
   entries[current] = location // replace
   ```
 
-### 
-
-## 6.4 readux与vuex
+## 6.5 readux与vuex
 
 []( https://juejin.im/post/5d6a6997e51d4561a54b69f6 )
 
-### 6.4.1 核心概念
+### 6.5.1 核心概念
 
 | Redux 的核心概念                                             | Vuex 的核心概念                                              |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -199,7 +207,7 @@ Fiber解决这个问题的思路是增量更新。
 | reducer（纯函数，根据 action 和旧的 store 计算出新的 store   | mutation里面直接修改 state                                   |
 | store（单一数据源）                                          | state（单一数据源）                                          |
 
-### 6.4.2 使用原则
+### 6.5.2 使用原则
 
 Redux 的三大原则：
 
@@ -213,14 +221,14 @@ Vuex 的三大原则：
 - 提交 mutation 是更改状态的唯一方法，并且这个过程是同步的。
 - 异步逻辑都应该封装到 action 里面。
 
-### 6.4.3 处理异步操作
+### 6.5.3 处理异步操作
 
 - Redux 得益于 中间件机制，利用 redux-thunk，可以将异步逻辑放在  action creator 里面，通过 action creator 做一个控制反转， 给 action creator 传入 dispatch 作为参数，于是就可以 dispatch  action
 -  而 Vuex 是用 mutation 来对应 Redux 的 action，另外 Vuex 又创造了一个 action 来提交 mutation 并通过异步提交 mutation 来实现异步操作结果能够到达 state. 
 
-## 6.5 对比
+## 6.6 对比
 
-### 6.5.1 生命周期：
+### 6.6.1 生命周期：
 
 Vue
 
@@ -247,13 +255,13 @@ http://projects.wojtekmaj.pl/react-lifecycle-methods-diagram/
 - componentWillUpdate-componentDidUpdate：patch，更新视图
 - componentWillUnmount：卸载
 
-### 6.5.2 相同点
+### 6.6.2 相同点
 
 - 都体现了虚拟dom思想
 - 都鼓励组件化应用
 - 生命周期也相似
 
-### 6.5.3 区别
+### 6.6.3 区别
 
 - Vue双向绑定；React单向数据流，大型应用状态更可控
 - diff实现的区别：
