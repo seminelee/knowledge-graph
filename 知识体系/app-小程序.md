@@ -140,16 +140,18 @@ Qt是一个1991年由Qt Company开发的跨平台C++图形用户界面应用程�
 
 Flutter是Google发布的一个用于创建跨平台、高性能移动应用的框架。Flutter和QT mobile一样，都没有使用原生控件，相反都实现了一个自绘引擎，使用自身的布局、绘制系统。
 
-Flutter使用自己的高性能渲染引擎来绘制widget，使用Skia作为其2D渲染引擎。
+  
+
+- Flutter使用自己的高性能渲染引擎来绘制widget，使用Skia作为其2D渲染引擎。
+
+   Flutter使用自己的渲染引擎来绘制UI，布局数据等由Dart语言直接控制，所以在布局过程中不需要像RN那样要在JavaScript和Native之间通信，这在一些滑动和拖动的场景下具有明显优势，因为这些场景下JavaScript需要和Native之间不停的同步布局信息，会带来比较可观的性能开销。 
 
 > Skia是Google的一个2D图形处理函数库，包含字型、坐标转换，以及点阵图都有高效能且简洁的表现，Skia是跨平台的，并提供了非常友好的API，目前Google Chrome浏览器和Android均采用Skia作为其绘图引擎。
 
-Flutter APP采用Dart语言开发。
-
-- **基于JIT的快速开发周期**：Flutter在开发阶段采用，采用JIT模式，这样就避免了每次改动都要进行编译，极大的节省了开发时间；
-
-- **基于AOT的发布包**: Flutter在发布时可以通过AOT生成高效的ARM代码以保证应用性能。而JavaScript则不具有这个能力。
-- Dart是类型安全的语言，支持静态类型检测
+- Flutter APP采用Dart语言开发。
+  - **基于JIT的快速开发周期**：Flutter在开发阶段采用，采用JIT模式，这样就避免了每次改动都要进行编译，极大的节省了开发时间；
+  - **基于AOT的发布包**: Flutter在发布时可以通过AOT生成高效的ARM代码以保证应用性能。而JavaScript则不具有这个能力。
+  - Dart是类型安全的语言，支持静态类型检测
 
 比起QT Mobile有以下优势：
 
@@ -160,6 +162,8 @@ Flutter APP采用Dart语言开发。
 
 
 ## 5 总结
+
+  其他框架只是做了OEM封装，Flutter可以直接操作Skia进行绘制。 ![img](https://user-gold-cdn.xitu.io/2019/9/6/16d04a2dde0b0705?imageView2/0/w/1280/h/960/format/webp/ignore-error/1) 
 
 | 技术类型            | UI渲染方式      | 性能 | 开发效率        | 动态化     | 框架代表       |
 | ------------------- | --------------- | ---- | --------------- | ---------- | -------------- |
@@ -179,13 +183,55 @@ Flutter APP采用Dart语言开发。
 
 
 
+# Flutter
+
+## 1 框架
+
+![图1-1](https://pcdn.flutterchina.club/imgs/1-1.png)
+
+### 1.1 Flutter Framework
+
+这是一个纯 Dart实现的 SDK，它实现了一套基础库，自底向上，我们来简单介绍一下：
+
+- 底下两层（Foundation和Animation、Painting、Gestures）在Google的一些视频中被合并为一个dart UI层，对应的是Flutter中的`dart:ui`包，它是Flutter引擎暴露的底层UI库，提供动画、手势及绘制能力。
+- Rendering层，这一层是一个抽象的布局层，它依赖于dart UI层，Rendering层会构建一个UI树，当UI树有变化时，会计算出有变化的部分，然后更新UI树，最终将UI树绘制到屏幕上，这个过程类似于React中的虚拟DOM。Rendering层可以说是Flutter UI框架最核心的部分，它除了确定每个UI元素的位置、大小之外还要进行坐标变换、绘制(调用底层dart:ui)。
+- Widgets层是Flutter提供的的一套基础组件库，在基础组件库之上，Flutter还提供了 Material 和Cupertino两种视觉风格的组件库。而**我们Flutter开发的大多数场景，只是和这两层打交道**。
+
+### 1.2 Flutter Engine
+
+这是一个纯 C++实现的 SDK，其中包括了 Skia引擎、Dart运行时、文字排版引擎等。在代码调用 `dart:ui`库时，调用最终会走到Engine层，然后实现真正的绘制逻辑。
+
+## 2 跨平台自绘引擎
+
+ Flutter与用于构建移动应用程序的其它大多数框架不同，因为Flutter既不使用WebView，也不使用操作系统的原生控件。 相反，Flutter使用自己的高性能渲染引擎来绘制widget。这样不仅可以保证在Android和iOS上UI的一致性，而且也可以避免对原生控件依赖而带来的限制及高昂的维护成本。 
+
+其他框架只是做了OEM封装，Flutter可以直接操作Skia进行绘制。 ![img](https://user-gold-cdn.xitu.io/2019/9/6/16d04a2dde0b0705?imageView2/0/w/1280/h/960/format/webp/ignore-error/1)
+
+## 3 高性能
+
+ Flutter高性能主要靠两点来保证，
+
+- 首先，Flutter APP采用Dart语言开发。
+
+  Dart在 JIT（即时编译）模式下，速度与 JavaScript基本持平。但是 Dart支持 AOT，当以 AOT模式运行时，JavaScript便远远追不上了。速度的提升对高帧率下的视图数据计算很有帮助。
+
+- 其次，Flutter使用自己的渲染引擎来绘制UI
+
+  布局数据等由Dart语言直接控制，所以在布局过程中不需要像RN那样要在JavaScript和Native之间通信，这在一些滑动和拖动的场景下具有明显优势。 
+
+## 4 Dart语言
+
+- **基于JIT的快速开发周期**：Flutter在开发阶段采用，采用JIT模式，这样就避免了每次改动都要进行编译，极大的节省了开发时间；
+- **基于AOT的发布包**: Flutter在发布时可以通过AOT生成高效的ARM代码以保证应用性能。而JavaScript则不具有这个能力。
+- Dart是类型安全的语言，支持静态类型检测
+
 # 小程序
 
 ## 1 小程序双线程模型
 
 https://seminelee.github.io/2019/05/08/rn-miniprogram/
 
-![å°ç¨åºé¡µé¢æ¸²æ](https://seminelee.github.io/static/2019/07/miniprogram-dom.png)
+
 
  ![img](https://user-gold-cdn.xitu.io/2018/5/17/1636cb90ba54f91e?imageView2/0/w/1280/h/960/format/webp/ignore-error/1) 
 
@@ -199,7 +245,15 @@ https://seminelee.github.io/2019/05/08/rn-miniprogram/
 2. 为了解决管控与安全问题，提供一个沙箱环境来运行开发者的JavaScript 代码（逻辑层），从而阻止开发者使用一些浏览器提供的，诸如跳转页面、操作DOM、动态执行脚本的开放性接口。
 3. 渲染层和逻辑层的分离也给在不同的环境下（小程序与小程序开发者工具）运行提供了可能性。
 
-### 1.1 与浏览器和nodejs中开发的区别
+### 1.1 通信模型
+
+![å°ç¨åºé¡µé¢æ¸²æ](https://seminelee.github.io/static/2019/07/miniprogram-dom.png)
+
+1. 在渲染层，宿主环境会把WXML转化成对应的JS对象 
+2. 在逻辑层发生数据变更的时候，我们需要通过宿主环境提供的setData方法把数据从逻辑层传递到渲染层 
+3.  再经过对比前后差异，把差异应用在原来的Dom树上，渲染出正确的UI界面 
+
+### 1.2 与浏览器和nodejs中开发的区别
 
 - 和浏览器的区别：
 
@@ -263,12 +317,16 @@ https://seminelee.github.io/2019/05/08/rn-miniprogram/
 
 ## 4 优化措施
 
-- 避免频繁的setData、避免每次setData传递大量的新数据。
-   由`setData`的底层实现可知，我们的数据传输实际是一次 `evaluateJavascript` 脚本过程，当数据量过大时会增加脚本的编译执行时间，占用 WebView JS 线程， 
+- 控制小程序包的大小：压缩代码；图片cdn；分包策略
 
--  注意大图片和长列表图片的使用。
-  在 iOS 上，小程序的页面是由多个 WKWebView 组成的，在系统内存紧张时，会回收掉一部分 WKWebView。从过去我们分析的案例来看，大图片和长列表图片的使用会引起 WKWebView 的回收。 
-
-- 分包加载， 优化小程序首次启动的下载时间 ； **清理没有使用到的代码和资源** ，减少代码包大小
+- 请求优化：利用缓存；先反馈，再请求；合并请求
 
 - 部分页面可以预先加载数据
+
+- 提升渲染性能：减少setData次数；防抖函数；
+
+  > - 避免频繁的setData、避免每次setData传递大量的新数据。
+  >   由`setData`的底层实现可知，我们的数据传输实际是一次 `evaluateJavascript` 脚本过程，当数据量过大时会增加脚本的编译执行时间，占用 WebView JS 线程， 
+  >
+  > - 注意大图片和长列表图片的使用。
+  >   在 iOS 上，小程序的页面是由多个 WKWebView 组成的，在系统内存紧张时，会回收掉一部分 WKWebView。从过去我们分析的案例来看，大图片和长列表图片的使用会引起 WKWebView 的回收。 

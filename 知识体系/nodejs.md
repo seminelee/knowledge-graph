@@ -73,13 +73,60 @@ https://seminelee.github.io/2017/11/19/php/
 
 ## 5.3 koa
 
+[Egg.js 与 Koa]( https://eggjs.org/zh-cn/intro/egg-and-koa.html )
+
+ [Koa](https://koajs.com/) 是一个新的 web 框架，由 Express 幕后的原班人马打造。 Koa 和 Express 的设计风格非常类似，底层也都是共用的[同一套 HTTP 基础库](https://github.com/jshttp)，  但是有几个显著的区别 ：
+
+### 5.3.1  默认异步解决方案 
+
 基于ES7开发 `async/await`
+
+ 通过同步方式编写异步代码带来的另外一个非常大的好处就是异常处理非常自然，使用 `try catch` 就可以将按照规范编写的代码中的所有错误都捕获到。 
+
+### 5.3.2 中间件
 
 下面的“洋葱”图更能形象地表达。用户的请求先后经过登陆管理，错误处理，各种中间件，应用。响应逆向经过这些步骤传递出去。
 
+ ![img](https://camo.githubusercontent.com/d80cf3b511ef4898bcde9a464de491fa15a50d06/68747470733a2f2f7261772e6769746875622e636f6d2f66656e676d6b322f6b6f612d67756964652f6d61737465722f6f6e696f6e2e706e67) 
 
 
-## 5.4 SQL 与 NoSQL
+
+### 5.3.3 Context
+
+  Context 上也挂载了 Request 和 Response 两个对象。和 Express 类似，这两个对象都提供了大量的便捷方法辅助开发。
+
+## 5.4 egg
+
+ Egg 选择了 Koa 作为其基础框架，在它的模型基础上，进一步对它进行了一些增强。 
+
+### 5.4.1 扩展
+
+ 我们可以通过定义 `app/extend/{application,context,request,response}.js` 来扩展 Koa 中对应的四个对象的原型，通过这个功能，我们可以快速的增加更多的辅助方法，例如我们在 `app/extend/context.js` 中写入下列代码： 
+
+``` js
+// app/extend/context.js
+module.exports = {
+  get isIOS() {
+    const iosReg = /iphone|ipad|ipod/i;
+    return iosReg.test(this.get('user-agent'));
+  },
+};
+```
+
+ 在 Controller 中，我们就可以使用到刚才定义的这个便捷属性了： 
+
+``` js
+// app/controller/home.js
+exports.handler = ctx => {
+  ctx.body = ctx.isIOS
+    ? 'Your operating system is iOS.'
+    : 'Your operating system is not iOS.';
+};
+```
+
+
+
+## 5.5 SQL 与 NoSQL
 
 NoSQL(NoSQL = Not Only SQL )，指的是非关系型的数据库。NoSQL有时也称作Not Only SQL的缩写，是对不同于传统的关系型数据库的数据库管理系统的统称。
 
